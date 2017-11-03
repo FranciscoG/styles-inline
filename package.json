@@ -4,7 +4,7 @@
   "description": "Move external local stylesheet into a style tag in the head of your html",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "env ENV=test mocha -c -t 10000 --reporter=spec test"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
     "cheerio": "^1.0.0-rc.2"
   },
   "devDependencies": {
+    "chai": "^4.1.2",
     "fs-extra": "^4.0.0",
     "mocha": "^4.0.1"
   }

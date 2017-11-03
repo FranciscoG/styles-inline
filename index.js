@@ -3,18 +3,19 @@ const path = require('path');
 const cheerio = require('cheerio');
 
 /**
+ * @private
  * Loads a local CSS file and creates a <style> tag with its content
  * 
- * @param {string} cssHref the path to the local CSS file
+ * @param {string} dir the cwd for the html file to load the CSS from
  * @param {Object} linkEl the <link> element repres
  * @param {Object} $ updated Cheerio instance with new <style> tag
  */
-function cssToStyle(cssHref, linkEl, $) {
+function cssToStyle(dir, linkEl, $) {
+  var cssHref = path.resolve(dir, linkEl.attribs.href);
   var css = fs.readFileSync(cssHref, { encoding: "utf-8"});
   
   var styleAttr = [
-    `data-href="${cssHref}"`,
-    'type="text/css"'
+    `data-href="${linkEl.attribs.href}"`
   ]
   if (linkEl.attribs.media) {
     styleAttr.push(`media="${linkEl.attribs.media}"`)
@@ -29,7 +30,7 @@ function cssToStyle(cssHref, linkEl, $) {
  * loads each link href and inlines the content inside a <style> tag in the <head>
  * 
  * @param {string} htmlString the valid html file as string
- * @param {string} dir optional - the cwd
+ * @param {string} dir optional - the path to load the css files from
  */
 function stylesInline(htmlString, dir) {
   var $ = cheerio.load(htmlString);
@@ -37,8 +38,8 @@ function stylesInline(htmlString, dir) {
 
   $('link').each(function(i,el){
     if (el.attribs.rel === "stylesheet") {
-      $ = cssToStyle( path.resolve(dir, el.attribs.href), el, $);
-      $('head').remove(el);
+      $ = cssToStyle(dir, el, $);
+      $(this).remove();
     }
   });
 
